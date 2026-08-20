@@ -47,24 +47,51 @@ def chat():
             "opening hours, location, and orders."
         )
 
-    # Mixed Jollof + Chicken order
-    elif "jollof" in text and "chicken" in text:
-        jollof_match = re.search(r"(\d+)\s*(?:jollof)", text)
-        chicken_match = re.search(r"(\d+)\s*(?:chicken)", text)
+    # Mixed orders
+    elif any(item in text for item in ["jollof", "chicken", "egusi", "pounded"]):
+        quantities = {
+            "jollof": 0,
+            "chicken": 0,
+            "pounded": 0
+        }
 
-        jollof_qty = int(jollof_match.group(1)) if jollof_match else 1
-        chicken_qty = int(chicken_match.group(1)) if chicken_match else 1
+        # Find quantities directly before each food
+        for item in quantities:
+            match = re.search(r"(\d+)\s*(?:[^\d,]*?)" + item, text)
+            if match:
+                quantities[item] = int(match.group(1))
+            elif item in text:
+                quantities[item] = 1
 
-        jollof_total = jollof_qty * prices["jollof"]
-        chicken_total = chicken_qty * prices["chicken"]
-        total = jollof_total + chicken_total
+        # Treat egusi as Pounded Yam & Egusi
+        if "egusi" in text and quantities["pounded"] == 0:
+            egusi_match = re.search(r"(\d+)\s*(?:[^\d,]*?)egusi", text)
+            quantities["pounded"] = int(egusi_match.group(1)) if egusi_match else 1
 
-        reply = (
-            f"{jollof_qty} Jollof Rice = ₦{jollof_total:,}\n"
-            f"{chicken_qty} Grilled Chicken = ₦{chicken_total:,}\n"
-            f"Total = ₦{total:,}"
-        )
+        jollof_total = quantities["jollof"] * prices["jollof"]
+        chicken_total = quantities["chicken"] * prices["chicken"]
+        pounded_total = quantities["pounded"] * prices["pounded"]
 
+        total = jollof_total + chicken_total + pounded_total
+
+        parts = []
+
+        if quantities["jollof"]:
+            parts.append(
+                f"{quantities['jollof']} Jollof Rice = ₦{jollof_total:,}"
+            )
+
+        if quantities["chicken"]:
+            parts.append(
+                f"{quantities['chicken']} Grilled Chicken = ₦{chicken_total:,}"
+            )
+
+        if quantities["pounded"]:
+            parts.append(
+                f"{quantities['pounded']} Pounded Yam & Egusi = ₦{pounded_total:,}"
+            )
+
+        reply = "\n".join(parts) + f"\nTotal = ₦{total:,}"
     # Budget questions
     elif re.search(r"(?:₦|ngn|n)?\s*10[,.]?000", text):
         reply = (
