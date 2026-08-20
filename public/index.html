@@ -103,30 +103,67 @@
 
   
     <section id="order" class="order section">
-      <p class="section-label">PLACE AN ORDER</p>
-      <h2>Order your favourite meal.</h2>
+  <p class="section-label">PLACE AN ORDER</p>
+  <h2>Build your order.</h2>
+  <p class="order-intro">Choose your meals, quantities and send your order directly to Lagos Bites on WhatsApp.</p>
 
-      <form id="orderForm" class="order-form">
-        <label for="customerName">Your name</label>
-        <input type="text" id="customerName" name="customerName" placeholder="Enter your name" required>
+  <div class="order-layout">
 
-        <label for="meal">Choose a meal</label>
-        <select id="meal" name="meal" required>
-          <option value="">Select a meal</option>
-          <option value="Jollof Rice">Jollof Rice - ₦4,500</option>
-          <option value="Grilled Chicken">Grilled Chicken - ₦5,000</option>
-          <option value="Pounded Yam & Egusi">Pounded Yam & Egusi - ₦5,500</option>
-        </select>
+    <form id="orderForm" class="order-form">
 
-        <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+      <label for="customerName">Your name</label>
+      <input type="text" id="customerName" placeholder="Enter your name" required>
 
-        <label for="phone">Phone number</label>
-        <input type="tel" id="phone" name="phone" placeholder="08012345678" required>
+      <label for="phone">Phone number</label>
+      <input type="tel" id="phone" placeholder="08012345678" required>
 
-        <button type="submit" class="btn primary">Send Order</button>
-      </form>
-    </section>
+      <label for="meal">Choose a meal</label>
+      <select id="meal" required>
+        <option value="">Select a meal</option>
+        <option value="Jollof Rice" data-price="4500">Jollof Rice — ₦4,500</option>
+        <option value="Grilled Chicken" data-price="5000">Grilled Chicken — ₦5,000</option>
+        <option value="Pounded Yam & Egusi" data-price="5500">Pounded Yam & Egusi — ₦5,500</option>
+      </select>
+
+      <label for="quantity">Quantity</label>
+      <input type="number" id="quantity" min="1" max="20" value="1" required>
+
+      <button type="submit" class="btn primary">Add to Order</button>
+    </form>
+
+    <div class="cart-box">
+      <div class="cart-header">
+        <div>
+          <p class="section-label">YOUR CART</p>
+          <h3>Your Order</h3>
+        </div>
+        <span id="cartCount">0 items</span>
+      </div>
+
+      <div id="cartItems">
+        <div class="empty-cart">
+          🛒
+          <p>Your cart is empty.</p>
+          <span>Add a meal to get started.</span>
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <span>Total</span>
+        <strong id="cartTotal">₦0</strong>
+      </div>
+
+      <button id="whatsappOrder" class="btn primary whatsapp-order" type="button" disabled>
+        Order on WhatsApp
+      </button>
+
+      <p class="cart-note">
+        Your order will open WhatsApp with the complete order details ready to send.
+      </p>
+    </div>
+
+  </div>
+</section>
 
   
     <section id="reviews" class="reviews section">
@@ -304,6 +341,179 @@
       <p>© 2026 Lagos Bites. All rights reserved.</p>
     </div>
   </footer>
+
+
+<script>
+const orderForm = document.getElementById("orderForm");
+const mealSelect = document.getElementById("meal");
+const quantityInput = document.getElementById("quantity");
+const customerName = document.getElementById("customerName");
+const phoneInput = document.getElementById("phone");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+const cartCount = document.getElementById("cartCount");
+const whatsappOrder = document.getElementById("whatsappOrder");
+
+let cart = [];
+
+const WHATSAPP_NUMBER = "2348147752622";
+
+function money(amount) {
+  return "₦" + amount.toLocaleString("en-NG");
+}
+
+function renderCart() {
+  if (cart.length === 0) {
+    cartItems.innerHTML = `
+      <div class="empty-cart">
+        🛒
+        <p>Your cart is empty.</p>
+        <span>Add a meal to get started.</span>
+      </div>
+    `;
+
+    cartTotal.textContent = "₦0";
+    cartCount.textContent = "0 items";
+    whatsappOrder.disabled = true;
+    return;
+  }
+
+  let total = 0;
+  let count = 0;
+
+  cartItems.innerHTML = "";
+
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+    count += item.quantity;
+
+    const row = document.createElement("div");
+    row.className = "cart-item";
+
+    row.innerHTML = `
+      <div class="cart-item-info">
+        <strong>${item.name}</strong>
+        <span>${money(item.price)} each</span>
+      </div>
+
+      <div class="cart-item-controls">
+        <button type="button" onclick="changeQuantity(${index}, -1)">−</button>
+        <strong>${item.quantity}</strong>
+        <button type="button" onclick="changeQuantity(${index}, 1)">+</button>
+        <button type="button" class="remove-item" onclick="removeItem(${index})">×</button>
+      </div>
+
+      <strong class="cart-item-total">${money(itemTotal)}</strong>
+    `;
+
+    cartItems.appendChild(row);
+  });
+
+  cartTotal.textContent = money(total);
+  cartCount.textContent = `${count} ${count === 1 ? "item" : "items"}`;
+  whatsappOrder.disabled = false;
+}
+
+orderForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const name = mealSelect.value;
+  const option = mealSelect.options[mealSelect.selectedIndex];
+  const price = Number(option.dataset.price);
+  const quantity = Number(quantityInput.value);
+
+  if (!name || !price || quantity < 1) {
+    alert("Please select a meal and quantity.");
+    return;
+  }
+
+  const existing = cart.find(item => item.name === name);
+
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    cart.push({
+      name: name,
+      price: price,
+      quantity: quantity
+    });
+  }
+
+  mealSelect.value = "";
+  quantityInput.value = 1;
+
+  renderCart();
+});
+
+function changeQuantity(index, amount) {
+  cart[index].quantity += amount;
+
+  if (cart[index].quantity <= 0) {
+    cart.splice(index, 1);
+  }
+
+  renderCart();
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  renderCart();
+}
+
+whatsappOrder.addEventListener("click", function() {
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const name = customerName.value.trim();
+  const phone = phoneInput.value.trim();
+
+  if (!name) {
+    alert("Please enter your name.");
+    customerName.focus();
+    return;
+  }
+
+  if (!phone) {
+    alert("Please enter your phone number.");
+    phoneInput.focus();
+    return;
+  }
+
+  let total = 0;
+
+  let message = `Hello Lagos Bites! 👋
+
+I'd like to place an order.
+
+Customer: ${name}
+Phone: ${phone}
+
+ORDER:
+`;
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+
+    message += `• ${item.quantity} × ${item.name} — ${money(itemTotal)}
+`;
+  });
+
+  message += `
+TOTAL: ${money(total)}
+
+Please confirm my order. Thank you! 🙏`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
+});
+
+renderCart();
+</script>
 
 </body>
 </html>
