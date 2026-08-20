@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lagos Bites - Delicious meals made fresh in Lagos.">
+  <title>Lagos Bites | Fresh Nigerian Food</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <a href="#" class="logo">Lagos Bites</a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">
+        ☰
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a href="#menu">Menu</a>
+        <a href="#about">About</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#location">Location</a>
+        <a href="#order">Order</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-content">
+        <p class="tagline">FRESH • LOCAL • DELICIOUS</p>
+        <h1>Good food.<br>Good vibes.</h1>
+        <p>
+          Enjoy delicious Nigerian meals prepared fresh for you,
+          right here in Lagos.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#menu" class="btn primary">View Menu</a>
+          <a href="#contact" class="btn secondary">Order Now</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="menu" class="section">
+      <p class="section-label">OUR MENU</p>
+      <h2>Customer favourites</h2>
+
+      <div class="menu-grid">
+
+        <article class="menu-card">
+          <img class="food-image" src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80" alt="Jollof rice">
+          <h3>Jollof Rice</h3>
+          <p>Smoky Nigerian jollof rice served with chicken.</p>
+          <strong>₦4,500</strong>
+        </article>
+
+        <article class="menu-card">
+          <img class="food-image" src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=80" alt="Grilled chicken">
+          <h3>Grilled Chicken</h3>
+          <p>Juicy grilled chicken with our special seasoning.</p>
+          <strong>₦5,000</strong>
+        </article>
+
+        <article class="menu-card">
+          <img class="food-image" src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80" alt="Nigerian meal">
+          <h3>Pounded Yam & Egusi</h3>
+          <p>Classic Nigerian comfort food made fresh.</p>
+          <strong>₦5,500</strong>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="about" class="about section">
+      <p class="section-label">ABOUT US</p>
+      <h2>Made with love in Lagos.</h2>
+
+      <p>
+        Lagos Bites is a local restaurant focused on serving delicious,
+        affordable Nigerian meals using fresh ingredients.
+      </p>
+    </section>
+
+    <section id="contact" class="contact section">
+      <p class="section-label">GET IN TOUCH</p>
+      <h2>Ready to eat?</h2>
+
+      <p>Place your order or contact us today.</p>
+
+      <div class="contact-buttons">
+        <a href="tel:+2348000000000" class="btn primary">Call Us</a>
+        <a href="https://wa.me/2348000000000" class="btn secondary">
+          WhatsApp
+        </a>
+      </div>
+    </section>
+
+  
+    <section id="order" class="order section">
+      <p class="section-label">PLACE AN ORDER</p>
+      <h2>Order your favourite meal.</h2>
+
+      <form id="orderForm" class="order-form">
+        <label for="customerName">Your name</label>
+        <input type="text" id="customerName" name="customerName" placeholder="Enter your name" required>
+
+        <label for="meal">Choose a meal</label>
+        <select id="meal" name="meal" required>
+          <option value="">Select a meal</option>
+          <option value="Jollof Rice">Jollof Rice - ₦4,500</option>
+          <option value="Grilled Chicken">Grilled Chicken - ₦5,000</option>
+          <option value="Pounded Yam & Egusi">Pounded Yam & Egusi - ₦5,500</option>
+        </select>
+
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+
+        <label for="phone">Phone number</label>
+        <input type="tel" id="phone" name="phone" placeholder="08012345678" required>
+
+        <button type="submit" class="btn primary">Send Order</button>
+      </form>
+    </section>
+
+  
+    <section id="reviews" class="reviews section">
+      <p class="section-label">CUSTOMER REVIEWS</p>
+      <h2>What our customers say.</h2>
+
+      <div class="reviews-grid">
+
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>
+            "The jollof rice was amazing. Everything arrived hot
+            and tasted fresh."
+          </p>
+          <strong>Amaka O.</strong>
+          <span>Lagos</span>
+        </article>
+
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>
+            "I've ordered from Lagos Bites several times.
+            The food and service are always excellent."
+          </p>
+          <strong>Daniel C.</strong>
+          <span>Victoria Island</span>
+        </article>
+
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>
+            "Great portions, great taste and very convenient
+            ordering. Definitely coming back."
+          </p>
+          <strong>Chidinma E.</strong>
+          <span>Yaba</span>
+        </article>
+
+      </div>
+    </section>
+
+  
+    <section id="location" class="location section">
+      <p class="section-label">VISIT US</p>
+      <h2>Come taste Lagos Bites.</h2>
+
+      <div class="location-grid">
+
+        <div class="location-card">
+          <div class="location-icon">📍</div>
+          <h3>Our Location</h3>
+          <p>12 Admiralty Way, Lekki Phase 1, Lagos, Nigeria</p>
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=12+Admiralty+Way+Lekki+Phase+1+Lagos"
+            target="_blank"
+            rel="noopener"
+            class="btn primary"
+          >
+            Open in Google Maps
+          </a>
+        </div>
+
+        <div class="location-card">
+          <div class="location-icon">🕐</div>
+          <h3>Opening Hours</h3>
+          <p>Monday - Saturday: 10:00 AM - 10:00 PM</p>
+          <p>Sunday: 12:00 PM - 8:00 PM</p>
+          <strong>Open for dine-in and takeaway.</strong>
+        </div>
+
+      </div>
+    </section>
+
+  
+    <section id="assistant" class="assistant section">
+      <p class="section-label">LAGOS BITES ASSISTANT</p>
+      <h2>Need help with your order?</h2>
+      <p class="assistant-intro">
+        Ask our assistant about meals, prices, opening hours, location, or ordering.
+      </p>
+
+      <div class="chat-box">
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-message bot">
+            <strong>Lagos Bites Assistant</strong>
+            <p>
+              Hi! 👋 What would you like to know about Lagos Bites?
+            </p>
+          </div>
+        </div>
+
+        <form id="chatForm" class="chat-form">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Ask me something..."
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="btn primary">Send</button>
+        </form>
+      </div>
+    </section>
+
+  
+    <section class="why-us section">
+      <p class="section-label">WHY LAGOS BITES</p>
+      <h2>Good food, made for your day.</h2>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">🍽️</div>
+          <h3>Fresh Meals</h3>
+          <p>Delicious meals prepared with quality ingredients.</p>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">⚡</div>
+          <h3>Easy Ordering</h3>
+          <p>Place your order quickly and conveniently from your phone.</p>
+        </div>
+
+        <div class="why-card">
+          <div class="why-icon">💬</div>
+          <h3>Direct Support</h3>
+          <p>Speak with us directly through WhatsApp whenever you need help.</p>
+        </div>
+      </div>
+    </section>
+
+  
+    <section class="cta-section">
+      <div class="cta-content">
+        <p class="section-label">READY TO ORDER?</p>
+        <h2>Your next delicious meal is just a few clicks away.</h2>
+        <p>
+          Choose your favourite meal, place your order, and enjoy Lagos Bites.
+        </p>
+
+        <a href="#order" class="btn primary">Order Now</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Lagos Bites. All rights reserved.</p>
+  </footer>
+
+  <script src="business.json" type="application/json"></script>
+<script src="script.js?v=2"></script>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div>
+        <h3>Lagos Bites</h3>
+        <p>Good food. Great moments.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#menu">Menu</a>
+        <a href="#order">Order</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="footer-contact">
+        <p>📍 Lekki Phase 1, Lagos</p>
+        <p>🕐 Mon-Sat: 10AM - 10PM</p>
+        <p>🕐 Sun: 12PM - 8PM</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Lagos Bites. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "Lagos Bites",
+  "tagline": "Good food. Great moments.",
+  "location": "12 Admiralty Way, Lekki Phase 1, Lagos, Nigeria",
+  "phone": "08000000000",
+  "whatsapp": "2348000000000",
+  "hours": {
+    "monday_saturday": "10:00 AM - 10:00 PM",
+    "sunday": "12:00 PM - 8:00 PM"
+  }
+}
