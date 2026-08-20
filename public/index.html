@@ -489,55 +489,101 @@ function removeItem(index) {
   renderCart();
 }
 
-whatsappOrder.addEventListener("click", function() {
+whatsappOrder.addEventListener("click", async function() {
   if (cart.length === 0) {
     alert("Your cart is empty.");
     return;
   }
 
-  const name = customerName.value.trim();
-  const phone = phoneInput.value.trim();
+  const customerName = document.getElementById("customerName")?.value.trim() || "";
+  const phone = document.getElementById("phone")?.value.trim() || "";
 
-  if (!name) {
-    alert("Please enter your name.");
-    customerName.focus();
+  if (!customerName || !phone) {
+    alert("Please enter your name and phone number before placing your order.");
+    document.getElementById("customerName")?.focus();
     return;
   }
 
-  if (!phone) {
-    alert("Please enter your phone number.");
-    phoneInput.focus();
-    return;
+  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const items = cart.map(item => ({
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price
+  }));
+
+  whatsappOrder.disabled = true;
+  whatsappOrder.textContent = "Creating order...";
+
+  try {
+    const response = await fetch("/api/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        customer: customerName,
+        phone: phone,
+        items: items,
+        total: total
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to create order.");
+    }
+
+    const orderId = data.order_id;
+
+    const orderLines = items.map(item =>
+      `${item.quantity} x ${item.name} - ₦${(item.price * item.quantity).toLocaleString()}`
+    ).join("
+");
+
+    const message =
+      `Hello Lagos Bites! 👋
+
+` +
+      `I'd like to place an order.
+
+` +
+      `Order ID: ${orderId}
+` +
+      `Customer: ${customerName}
+` +
+      `Phone: ${phone}
+
+` +
+      `${orderLines}
+
+` +
+      `Total: ₦${total.toLocaleString()}
+
+` +
+      `Please confirm my order.`;
+
+    const whatsappUrl =
+      "https://wa.me/2348147752622?text=" +
+      encodeURIComponent(message);
+
+    alert(
+      `Order created successfully!\n\nYour Order ID is ${orderId}.\n\nSave this ID to track your order.`
+    );
+
+    window.open(whatsappUrl, "_blank");
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "Sorry, we couldn't create your order. Please try again."
+    );
+  } finally {
+    whatsappOrder.disabled = false;
+    whatsappOrder.textContent = "Order on WhatsApp";
   }
-
-  let total = 0;
-
-  let message = `Hello Lagos Bites! 👋
-
-I'd like to place an order.
-
-Customer: ${name}
-Phone: ${phone}
-
-ORDER:
-`;
-
-  cart.forEach(item => {
-    const itemTotal = item.price * item.quantity;
-    total += itemTotal;
-
-    message += `• ${item.quantity} × ${item.name} — ${money(itemTotal)}
-`;
-  });
-
-  message += `
-TOTAL: ${money(total)}
-
-Please confirm my order. Thank you! 🙏`;
-
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-  window.open(url, "_blank");
 });
 
 renderCart();
