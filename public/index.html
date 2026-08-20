@@ -238,7 +238,35 @@
     </section>
 
   
-    <section id="assistant" class="assistant section">
+    
+<section id="track-order" class="track-order section">
+  <p class="section-label">TRACK YOUR ORDER</p>
+  <h2>Where's my food?</h2>
+  <p class="track-intro">
+    Enter your Lagos Bites Order ID to check your order status.
+  </p>
+
+  <div class="track-box">
+    <input
+      type="text"
+      id="orderIdInput"
+      placeholder="Example: LB-A1B2C3"
+      autocomplete="off"
+    >
+
+    <button
+      type="button"
+      id="trackOrderBtn"
+      class="btn primary"
+    >
+      Track Order
+    </button>
+
+    <div id="orderStatus" class="order-status"></div>
+  </div>
+</section>
+
+<section id="assistant" class="assistant section">
       <p class="section-label">LAGOS BITES ASSISTANT</p>
       <h2>Need help with your order?</h2>
       <p class="assistant-intro">
@@ -517,3 +545,72 @@ renderCart();
 
 </body>
 </html>
+<script>
+const trackOrderBtn = document.getElementById("trackOrderBtn");
+const orderIdInput = document.getElementById("orderIdInput");
+const orderStatus = document.getElementById("orderStatus");
+
+if (trackOrderBtn) {
+  trackOrderBtn.addEventListener("click", async () => {
+    const orderId = orderIdInput.value.trim();
+
+    if (!orderId) {
+      orderStatus.innerHTML = "<p>Please enter your Order ID.</p>";
+      return;
+    }
+
+    orderStatus.innerHTML = "<p>Checking your order...</p>";
+
+    try {
+      const response = await fetch(
+        "/api/order/" + encodeURIComponent(orderId)
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        orderStatus.innerHTML = `
+          <div class="status-error">
+            ❌ Order not found.<br>
+            Please check your Order ID and try again.
+          </div>
+        `;
+        return;
+      }
+
+      const order = data.order;
+
+      const statusSteps = ["Received", "Preparing", "Ready", "Completed"];
+      const currentIndex = statusSteps.indexOf(order.status);
+
+      orderStatus.innerHTML = `
+        <div class="order-result">
+          <div class="order-result-header">
+            <strong>${order.order_id}</strong>
+            <span>${order.status}</span>
+          </div>
+
+          <div class="status-progress">
+            ${statusSteps.map((step, index) => `
+              <div class="status-step ${index <= currentIndex ? "active" : ""}">
+                <div class="status-dot"></div>
+                <small>${step}</small>
+              </div>
+            `).join("")}
+          </div>
+
+          <p><strong>Customer:</strong> ${order.customer}</p>
+          <p><strong>Total:</strong> ₦${Number(order.total).toLocaleString()}</p>
+        </div>
+      `;
+
+    } catch (error) {
+      orderStatus.innerHTML = `
+        <div class="status-error">
+          ❌ Unable to check the order right now.
+        </div>
+      `;
+    }
+  });
+}
+</script>

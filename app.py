@@ -226,5 +226,63 @@ def chat():
     return jsonify({"reply": reply})
 
 
+
+# =========================
+# ORDER TRACKING
+# =========================
+
+orders = {}
+
+@app.route("/api/order", methods=["POST"])
+def create_order():
+    data = request.get_json(silent=True) or {}
+
+    customer = data.get("customer", "").strip()
+    phone = data.get("phone", "").strip()
+    items = data.get("items", [])
+    total = data.get("total", 0)
+
+    if not customer or not phone or not items:
+        return jsonify({
+            "success": False,
+            "message": "Customer name, phone and items are required."
+        }), 400
+
+    import uuid
+
+    order_id = "LB-" + uuid.uuid4().hex[:6].upper()
+
+    orders[order_id] = {
+        "order_id": order_id,
+        "customer": customer,
+        "phone": phone,
+        "items": items,
+        "total": total,
+        "status": "Received"
+    }
+
+    return jsonify({
+        "success": True,
+        "order_id": order_id,
+        "status": "Received"
+    })
+
+
+@app.route("/api/order/<order_id>", methods=["GET"])
+def get_order(order_id):
+    order = orders.get(order_id.upper())
+
+    if not order:
+        return jsonify({
+            "success": False,
+            "message": "Order not found."
+        }), 404
+
+    return jsonify({
+        "success": True,
+        "order": order
+    })
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
