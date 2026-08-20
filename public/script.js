@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `Total: ₦${encodeURIComponent(total.toLocaleString())}%0A` +
         `Phone: ${encodeURIComponent(phone)}`;
 
-      const whatsappNumber = "2348000000000";
+      const whatsappNumber = "2348147752622";
 
       const whatsappUrl =
         `https://wa.me/${whatsappNumber}?text=${message}`;
