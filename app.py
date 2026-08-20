@@ -65,22 +65,21 @@ def chat():
             f"Total = ₦{total:,}"
         )
 
-    # Budget
-    elif any(
-        amount in text
-        for amount in ["5000", "5,000", "₦5000", "₦5,000"]
-    ):
+    # Budget questions
+    elif re.search(r"(?:₦|ngn|n)?\s*10[,.]?000", text):
         reply = (
-            "With ₦5,000, you can get Jollof Rice for ₦4,500, "
-            "leaving ₦500. Grilled Chicken is exactly ₦5,000."
+            "With ₦10,000, you can get:\n"
+            "🍚 2 Jollof Rice = ₦9,000, leaving ₦1,000.\n"
+            "🍗 2 Grilled Chicken = ₦10,000 exactly.\n"
+            "🥘 1 Pounded Yam & Egusi + 1 Jollof Rice = ₦10,000 exactly.\n\n"
+            "Best value: 2 Jollof Rice meals for ₦9,000."
         )
 
-    elif any(word in text for word in ["budget", "afford", "within"]):
+    elif "budget" in text or "afford" in text or "within" in text:
         reply = (
             "Our most affordable meal is Jollof Rice at ₦4,500. "
             "Grilled Chicken is ₦5,000, while Pounded Yam & Egusi is ₦5,500."
         )
-
     # Recommendations
     elif any(
         phrase in text
