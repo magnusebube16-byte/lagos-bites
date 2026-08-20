@@ -238,35 +238,7 @@
     </section>
 
   
-    
-<section id="track-order" class="track-order section">
-  <p class="section-label">TRACK YOUR ORDER</p>
-  <h2>Where's my food?</h2>
-  <p class="track-intro">
-    Enter your Lagos Bites Order ID to check your order status.
-  </p>
-
-  <div class="track-box">
-    <input
-      type="text"
-      id="orderIdInput"
-      placeholder="Example: LB-A1B2C3"
-      autocomplete="off"
-    >
-
-    <button
-      type="button"
-      id="trackOrderBtn"
-      class="btn primary"
-    >
-      Track Order
-    </button>
-
-    <div id="orderStatus" class="order-status"></div>
-  </div>
-</section>
-
-<section id="assistant" class="assistant section">
+    <section id="assistant" class="assistant section">
       <p class="section-label">LAGOS BITES ASSISTANT</p>
       <h2>Need help with your order?</h2>
       <p class="assistant-intro">
@@ -489,173 +461,59 @@ function removeItem(index) {
   renderCart();
 }
 
-whatsappOrder.addEventListener("click", async function() {
+whatsappOrder.addEventListener("click", function() {
   if (cart.length === 0) {
     alert("Your cart is empty.");
     return;
   }
 
-  const customerName = document.getElementById("customerName")?.value.trim() || "";
-  const phone = document.getElementById("phone")?.value.trim() || "";
+  const name = customerName.value.trim();
+  const phone = phoneInput.value.trim();
 
-  if (!customerName || !phone) {
-    alert("Please enter your name and phone number before placing your order.");
-    document.getElementById("customerName")?.focus();
+  if (!name) {
+    alert("Please enter your name.");
+    customerName.focus();
     return;
   }
 
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-  const items = cart.map(item => ({
-    name: item.name,
-    quantity: item.quantity,
-    price: item.price
-  }));
-
-  whatsappOrder.disabled = true;
-  whatsappOrder.textContent = "Creating order...";
-
-  try {
-    const response = await fetch("/api/order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        customer: customerName,
-        phone: phone,
-        items: items,
-        total: total
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || "Unable to create order.");
-    }
-
-    const orderId = data.order_id;
-
-    const orderLines = items.map(item =>
-      `${item.quantity} x ${item.name} - ₦${(item.price * item.quantity).toLocaleString()}`
-    ).join("
-");
-
-    const message =
-      `Hello Lagos Bites! 👋
-
-` +
-      `I'd like to place an order.
-
-` +
-      `Order ID: ${orderId}
-` +
-      `Customer: ${customerName}
-` +
-      `Phone: ${phone}
-
-` +
-      `${orderLines}
-
-` +
-      `Total: ₦${total.toLocaleString()}
-
-` +
-      `Please confirm my order.`;
-
-    const whatsappUrl =
-      "https://wa.me/2348147752622?text=" +
-      encodeURIComponent(message);
-
-    alert(
-      `Order created successfully!\n\nYour Order ID is ${orderId}.\n\nSave this ID to track your order.`
-    );
-
-    window.open(whatsappUrl, "_blank");
-
-  } catch (error) {
-    console.error(error);
-
-    alert(
-      "Sorry, we couldn't create your order. Please try again."
-    );
-  } finally {
-    whatsappOrder.disabled = false;
-    whatsappOrder.textContent = "Order on WhatsApp";
+  if (!phone) {
+    alert("Please enter your phone number.");
+    phoneInput.focus();
+    return;
   }
+
+  let total = 0;
+
+  let message = `Hello Lagos Bites! 👋
+
+I'd like to place an order.
+
+Customer: ${name}
+Phone: ${phone}
+
+ORDER:
+`;
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+
+    message += `• ${item.quantity} × ${item.name} — ${money(itemTotal)}
+`;
+  });
+
+  message += `
+TOTAL: ${money(total)}
+
+Please confirm my order. Thank you! 🙏`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
 });
 
 renderCart();
-
-
-const orderIdInput = document.getElementById("orderIdInput");
-const orderStatus = document.getElementById("orderStatus");
-
-if (trackOrderBtn) {
-  trackOrderBtn.addEventListener("click", async () => {
-    const orderId = orderIdInput.value.trim();
-
-    if (!orderId) {
-      orderStatus.innerHTML = "<p>Please enter your Order ID.</p>";
-      return;
-    }
-
-    orderStatus.innerHTML = "<p>Checking your order...</p>";
-
-    try {
-      const response = await fetch(
-        "/api/order/" + encodeURIComponent(orderId)
-      );
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        orderStatus.innerHTML = `
-          <div class="status-error">
-            ❌ Order not found.<br>
-            Please check your Order ID and try again.
-          </div>
-        `;
-        return;
-      }
-
-      const order = data.order;
-
-      const statusSteps = ["Received", "Preparing", "Ready", "Completed"];
-      const currentIndex = statusSteps.indexOf(order.status);
-
-      orderStatus.innerHTML = `
-        <div class="order-result">
-          <div class="order-result-header">
-            <strong>${order.order_id}</strong>
-            <span>${order.status}</span>
-          </div>
-
-          <div class="status-progress">
-            ${statusSteps.map((step, index) => `
-              <div class="status-step ${index <= currentIndex ? "active" : ""}">
-                <div class="status-dot"></div>
-                <small>${step}</small>
-              </div>
-            `).join("")}
-          </div>
-
-          <p><strong>Customer:</strong> ${order.customer}</p>
-          <p><strong>Total:</strong> ₦${Number(order.total).toLocaleString()}</p>
-        </div>
-      `;
-
-    } catch (error) {
-      orderStatus.innerHTML = `
-        <div class="status-error">
-          ❌ Unable to check the order right now.
-        </div>
-      `;
-    }
-  });
-}
-</script>
 </script>
 
 </body>
+</html>
